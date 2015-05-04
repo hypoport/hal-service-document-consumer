@@ -3,7 +3,7 @@ hal-service-document-consumer
 
 A library to consume HAL based service documents of restful services.
 
-This is comfortable thin wrapper around the [theoryinpractice halbuilder](http://www.theoryinpractice.net/post/94282847622/halbuilder-4-x-released) extended with [Handy-URI-Templates](https://github.com/damnhandy/Handy-URI-Templates).
+This is comfortable thin wrapper around [theory in practice halbuilder](http://www.theoryinpractice.net/post/94282847622/halbuilder-4-x-released) extended with [Handy-URI-Templates](https://github.com/damnhandy/Handy-URI-Templates).
 
 Usage
 -----
@@ -76,11 +76,11 @@ nexusUrl=...
 ```
 
 
-Contributor
+Contributors
 -----------
 
-- Martin W. Kirst
-- Timmo Freudl-Gierke
+- [Martin W. Kirst](https://github.com/nitram509)
+- [Timmo Freudl-Gierke](https://github.com/timmo)
 
 License
 -----
