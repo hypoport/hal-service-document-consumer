@@ -1,0 +1,16 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "http://foo.io/"
+    },
+    "http://www.foo.io/rel/persons" : {
+      "href" : "http://foo.io/persons/"
+    },
+    "http://www.foo.io/rel/carsearch" : {
+      "href" : "https://www.foo.io/cars?color={color}"
+    },
+    "http://www.foo.io/rel/petsearch" : {
+      "href" : "https://www.foo.io/pets{?food,keeping}"
+    }
+  }
+}

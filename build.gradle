@@ -1,0 +1,78 @@
+import java.text.SimpleDateFormat
+
+project.ext {
+  groupId = 'org.hypoport'
+  artifactId = 'hal-service-document-consumer'
+  version = newVersion()
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+compileJava {
+  sourceCompatibility = "1.7"
+  targetCompatibility = "1.7"
+}
+
+repositories {
+  mavenLocal()
+//  mavenCentral()
+  maven { url "http://nexus-beta.hypoport.local/nexus/content/groups/europace2/" }
+}
+
+dependencies {
+  def springVersion = '3.2.10.RELEASE'
+
+  compile 'com.fasterxml.jackson.core:jackson-annotations:2.3.3'
+  compile('com.theoryinpractise:halbuilder-standard:4.0.1') {
+    exclude module: 'jackson-annotations'
+  }
+  compile 'com.damnhandy:handy-uri-templates:2.0.2'
+
+  testCompile 'org.testng:testng:5.14.2'
+  testCompile 'org.easytesting:fest-assert:1.4'
+  testCompile 'org.mockito:mockito-all:1.9.5'
+  testCompile 'de.hypoport.testutils:testng-testutils:1.5'
+  testCompile 'commons-io:commons-io:2.4'
+}
+
+def newVersion() {
+  return new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
+}
+
+publishing {
+  repositories {
+    maven {
+      url project.nexusUrl
+      credentials {
+        username project.nexusUsername
+        password project.nexusPassword
+      }
+    }
+  }
+  publications {
+    mavenJava(MavenPublication) {
+      groupId project.ext.groupId
+      artifactId project.ext.artifactId
+      version project.ext.version
+      from components.java
+      artifact sourceJar {
+        classifier "sources"
+      }
+    }
+  }
+}
+
+task writeVersionTxt << {
+  new File("version.txt").withWriter { out ->
+    out.print project.ext.version
+  }
+}
+
+tasks.publish.dependsOn writeVersionTxt
+
+task sourceJar(type: Jar) {
+  from sourceSets.main.allJava
+}
