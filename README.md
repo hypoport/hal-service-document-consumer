@@ -8,6 +8,20 @@ This is comfortable thin wrapper around [theory in practice halbuilder](http://w
 Usage
 -----
 
+### Maven
+
+Add dependency to Maven pom.xml
+
+```xml
+<dependency>
+  <groupId>org.hypoport</groupId>
+  <artifactId>hal-service-document-consumer</artifactId>
+  <version>2015-05-04T15-08-09</version>
+</dependency>
+```
+
+### Example
+
 Given this example service document in [HAL](http://stateless.co/hal_specification.html) formatted:
 
 ```json
