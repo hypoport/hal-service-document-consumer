@@ -1,17 +1,14 @@
 /**
- *  Copyright 2014 HYPOPORT AG
+ * Copyright 2014 HYPOPORT AG
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.hypoport.hal.consuming;
 
@@ -29,6 +26,7 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON;
 
@@ -80,19 +78,25 @@ public class ServiceDocumentImpl implements ServiceDocument {
     return representation.getLinkByRel(relation);
   }
 
-  InputStream downloadServiceDocument(URL url, Proxy proxy, RequestProperty[] requestProperties) {
+  InputStream downloadServiceDocument(final URL url, final Proxy proxy, final RequestProperty[] requestProperties) {
     try {
-      URLConnection urlConnection = url.openConnection(proxy == null ? Proxy.NO_PROXY : proxy);
-      urlConnection.addRequestProperty("Accept", "application/hal+json,application/json");
-      if (requestProperties != null) {
-        for (RequestProperty rp : requestProperties) {
-          urlConnection.addRequestProperty(rp.key, rp.value);
+      InputStream inputStream = HttpClientRetryExecutor.executeWithRetryOnNetworkError(new Callable<InputStream>() {
+        @Override
+        public InputStream call() throws IOException {
+          URLConnection urlConnection = url.openConnection(proxy == null ? Proxy.NO_PROXY : proxy);
+          urlConnection.addRequestProperty("Accept", "application/hal+json,application/json");
+          if (requestProperties != null) {
+            for (RequestProperty rp : requestProperties) {
+              urlConnection.addRequestProperty(rp.key, rp.value);
+            }
+          }
+          return urlConnection.getInputStream();
         }
-      }
-      return urlConnection.getInputStream();
+      });
+      return inputStream;
     }
     catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Could not download service document from "+ url , e);
     }
   }
 

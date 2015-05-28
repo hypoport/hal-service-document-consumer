@@ -34,12 +34,11 @@ import java.net.URL;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class ServiceDocumentImplTest implements HttpHandler {
+public class ServiceDocumentImplTest {
 
   ServiceDocumentImpl document;
   HttpServer httpServer;
@@ -47,24 +46,26 @@ public class ServiceDocumentImplTest implements HttpHandler {
   @BeforeClass
   public void startHttpServer() throws IOException {
     httpServer = HttpServer.create(new InetSocketAddress(0), 0);
-    httpServer.createContext("/example-service-document.hal.json", this);
+    httpServer.createContext("/example-service-document.hal.json", new HttpHandler() {
+      @Override
+      public void handle(HttpExchange httpExchange) throws IOException {
+        String document = IOUtils.toString(ServiceDocumentImplTest.this.getClass().getResourceAsStream("example-service-document.hal.json"));
+        httpExchange.sendResponseHeaders(200, document.getBytes("UTF-8").length);
+        httpExchange.getResponseHeaders().add("Content-Type", "application/hal+json");
+        IOUtils.write(document, httpExchange.getResponseBody(), "UTF-8");
+        httpExchange.getResponseBody().close();
+      }
+    });
     httpServer.setExecutor(null); // creates a default executor
     httpServer.start();
     System.out.println("http server port: " + httpServer.getAddress().getPort());
   }
 
-  @Override
-  public void handle(HttpExchange httpExchange) throws IOException {
-    String document = IOUtils.toString(this.getClass().getResourceAsStream("example-service-document.hal.json"));
-    httpExchange.sendResponseHeaders(200, document.getBytes("UTF-8").length);
-    httpExchange.getResponseHeaders().add("Content-Type", "application/hal+json");
-    IOUtils.write(document, httpExchange.getResponseBody(), "UTF-8");
-    httpExchange.getResponseBody().close();
-  }
-
   @AfterClass(alwaysRun = true)
   public void shutdownHttpServer() {
-    httpServer.stop(0);
+    if (httpServer!=null) {
+      httpServer.stop(0);
+    }
   }
 
   @BeforeMethod
