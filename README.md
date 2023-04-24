@@ -1,3 +1,7 @@
+---
+> # ⚠️ This library is archived and should not be used anymore. The code was inlined into the [ep2-core](https://github.com/hypoport/ep2-core/pull/6701).
+---
+
 hal-service-document-consumer
 =============================
 
